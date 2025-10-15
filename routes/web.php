@@ -13,7 +13,11 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = auth()->user();
+    if ($user && $user->isAdmin()) {
+        return redirect()->route('dashboard.stats');
+    }
+    return redirect()->route('posts.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Dashboard stats page (HTML)
