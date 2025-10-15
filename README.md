@@ -1,66 +1,235 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Blog Assignment (AI-first Company)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This document describes setup, features, and usage for the interview assignment. It is designed to help reviewers spin up the app quickly and verify requirements.
 
-## About Laravel
+## Tech Stack
+- Laravel 11, PHP 8.3
+- Breeze authentication, Tailwind + Vite
+- SQLite database (default)
+- Database-backed queues
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Quick Start
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1) Install dependencies
+- Composer: `composer install`
+- Node: `npm install`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2) Environment
+- Copy `.env.example` to `.env` if needed
+- Ensure `DB_CONNECTION=sqlite`
+- If using the bundled SQLite file (recommended for reviewers), set `DB_DATABASE=database/database.sqlite`
 
-## Learning Laravel
+3) Database
+- If the bundled SQLite file is present: you can skip migrations
+- If you prefer a fresh database:
+  - Create the SQLite file: `touch database/database.sqlite`
+  - Run migrations: `php artisan migrate`
+  - Seed data: `php artisan db:seed --class=SampleDataSeeder`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4) App key
+- `php artisan key:generate`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+5) Run the app
+- Start server: `php artisan serve`
+- Start queue worker (for risk scoring): `php artisan queue:work`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+6) Frontend assets
+- Using the bundled production build (recommended for reviewers): nothing to do
+- If you want to rebuild assets locally:
+  - `npm run dev` (for development) or `npm run build` (for production)
 
-## Laravel Sponsors
+## Login Credentials
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Seeded accounts (use these to sign in):
 
-### Premium Partners
+- Admin
+  - Email: `admin@example.com`
+  - Password: `password`
+- Moderator
+  - Email: `moderator@example.com`
+  - Password: `password`
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+You can also register a new user via the UI.
 
-## Contributing
+## URLs
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Home: `/`
+- Posts index: `/posts`
+- Dashboard: `/dashboard` (requires authentication)
+- Dashboard stats: `/dashboard/stats` (requires authentication)
 
-## Code of Conduct
+## Bundled Database (Reviewer Convenience)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- A pre-seeded SQLite database file is included. This lets you run the app immediately after `composer install` without running migrations or seeders.
+- If you encounter “credentials do not match,” ensure your `.env` points to the correct SQLite file:
+  - `DB_CONNECTION=sqlite`
+  - `DB_DATABASE=database/database.sqlite`
 
-## Security Vulnerabilities
+## Bundled Assets (Reviewer Convenience)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- A pre-built `public/build` is included. You can skip Node/Vite entirely.
+- If you prefer to rebuild assets:
+  - `npm install`
+  - `npm run build` (or `npm run dev` while developing)
 
-## License
+## Seeding (If You Use a Fresh DB)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Run: `php artisan migrate --seed --seeder=SampleDataSeeder`
+- The seeder ensures the admin/moderator users exist with the password `password`, and populates posts, comments, and tags.
+
+## Troubleshooting
+
+- Login fails (“These credentials do not match our records.”):
+  - Confirm `.env` points to the intended SQLite file
+  - If you switched DBs, reseed: `php artisan migrate:fresh --seed --seeder=SampleDataSeeder`
+- Risk scoring not updated:
+  - Ensure the queue worker is running: `php artisan queue:work`
+- Config or route changes not applied:
+  - `php artisan config:clear && php artisan cache:clear && php artisan route:clear`
+
+## Routes Overview
+
+Public
+- GET `/` — Home
+- GET `/posts` — List posts
+- GET `/posts/{post}` — View a post
+
+Authenticated
+- GET `/dashboard` — Dashboard
+- GET `/dashboard/stats` — Stats page
+
+Posts (requires authentication for create/update/delete)
+- GET `/posts/create` — Create form
+- POST `/posts` — Store post
+- GET `/posts/{post}/edit` — Edit form
+- PUT/PATCH `/posts/{post}` — Update post
+- DELETE `/posts/{post}` — Delete post
+
+Comments (requires authentication)
+- POST `/posts/{post}/comments` — Add comment
+- GET `/comments/{comment}/edit` — Edit comment form
+- PATCH `/comments/{comment}` — Update comment
+- DELETE `/comments/{comment}` — Delete comment
+- POST `/comments/{comment}/flag` — Flag comment
+- DELETE `/comments/{comment}/flag` — Clear flag (moderators/admins)
+
+Profile (requires authentication)
+- GET `/profile` — Edit profile
+- PATCH `/profile` — Update profile
+- DELETE `/profile` — Delete account
+
+Authentication (Breeze)
+- GET `/login`, POST `/login`
+- GET `/register`, POST `/register`
+- GET `/forgot-password`, POST `/forgot-password`
+- GET `/reset-password/{token}`, POST `/reset-password`
+- GET `/verify-email`, GET `/verify-email/{id}/{hash}`, POST `/email/verification-notification`
+- POST `/logout`
+
+2) Environment
+- Copy `.env.example` to `.env`
+- Ensure `DB_CONNECTION=sqlite`
+- Create the SQLite file: `touch database/database.sqlite`
+
+3) App key and migrations
+- Generate app key: `php artisan key:generate`
+- Run migrations: `php artisan migrate`
+
+4) Seed sample data
+- Seed sample users, posts, comments, and tags:
+  - `php artisan db:seed --class=SampleDataSeeder`
+
+5) Run the app
+- Start dev server: `php artisan serve`
+- Start Vite dev: `npm run dev`
+- Start queue worker (risk scoring): `php artisan queue:work` (or `php artisan queue:listen`)
+
+You can now visit:
+- App: http://127.0.0.1:8000
+- Posts index: http://127.0.0.1:8000/posts
+- Dashboard (authenticated): http://127.0.0.1:8000/dashboard
+- Stats endpoint (authenticated, JSON): http://127.0.0.1:8000/dashboard/stats
+
+## Seeded Accounts
+
+- Admin: admin@example.com
+- Moderator: moderator@example.com
+- Regular users: generated by seeder
+
+Default password for seeded users is typically "password" (unless changed in your User factory).
+
+## Features Implemented
+
+1) Basic Blog CRUD
+- Auth via Breeze
+- Posts CRUD (create, read, update, delete)
+- Ownership enforced: only the owner can edit/delete
+- Validation: title and content required
+
+2) Comments & Relationships
+- Comments on posts with create/update/delete
+- Only comment owners can delete their comments
+- Eloquent relationships: User → Posts, Post → Comments
+
+3) Roles & Authorization
+- Roles: Admin, Moderator, User
+- Admin/Moderator can moderate content; Admin can delete, Moderator cannot delete others’ posts; regular users manage their own
+- Authorization enforced via policies
+
+4) Flags, Tags & Filters
+- Flagging for inappropriate comments (users can flag; Admin/Moderator can clear)
+- Tagging system for posts (comma-separated input)
+- Post filters: search, tag; sorting by created_at/title/risk_score
+- Eager loading and basic indexes for performance
+
+5) Analytics & Scheduling
+- Dashboard stats endpoint: `/dashboard/stats` (authenticated) returns totals and top users
+- Scheduling (archive old posts, daily summary) can be added upon request
+
+6) Risk Assessment & Notification Service
+- Asynchronous risk scoring job dispatched on post create/update
+- Rules:
+  - Contains: accident, fire, theft, damage → +50
+  - Short content (<50 chars) → +10
+  - Default baseline → +20
+- Levels: low (<30), medium (30–69), high (70+)
+- High-risk posts produce an admin notification via logging (mail integration can be added)
+
+7) Filtering & Dynamic Reports
+- Basic filters included on posts (search, tag, sort, direction)
+- Full dynamic reporting (AND/OR logic, exports, advanced aggregations) can be implemented as a follow-up
+
+## Endpoints Overview
+
+- Auth (Breeze): register, login, password reset, email verification
+- Posts:
+  - CRUD: `/posts`, `/posts/{post}`
+  - Filters: `?search=...&tag=...&sort=created_at|title|risk_score&direction=asc|desc`
+- Comments:
+  - Create: `POST /posts/{post}/comments`
+  - Edit/Update: `GET /comments/{comment}/edit`, `PATCH /comments/{comment}`
+  - Delete: `DELETE /comments/{comment}`
+  - Flag/Unflag: `POST /comments/{comment}/flag`, `DELETE /comments/{comment}/flag`
+- Stats:
+  - `GET /dashboard/stats` (authenticated JSON: totals and top users)
+
+## Roles & Permissions Summary
+
+- Admin
+  - Moderate content
+  - Delete any post/comment
+- Moderator
+  - Moderate content
+  - Cannot delete others’ posts
+- User
+  - Manage own posts/comments
+
+## Testing
+
+- Run test suite: `php artisan test`
+
+## Notes
+
+- Queues: ensure the queue worker is running to process risk scoring.
+- SQLite is default for simplicity; feel free to switch DB in `.env`.
+- Additional items (scheduling with mail summaries, advanced reporting, CSV/Excel export) are available as next steps on request.
